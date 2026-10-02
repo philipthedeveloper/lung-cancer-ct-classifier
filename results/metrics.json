@@ -1,0 +1,35 @@
+{
+  "model": "EfficientNetB0 (ImageNet) + fine-tuning",
+  "train_images": 613,
+  "test_images": 315,
+  "validation_accuracy": 0.8889,
+  "test_accuracy": 0.8984,
+  "test_macro_f1": 0.9075,
+  "test_weighted_f1": 0.8979,
+  "per_class": {
+    "Adenocarcinoma": {
+      "precision": 0.8957,
+      "recall": 0.8583,
+      "f1-score": 0.8766,
+      "support": 120.0
+    },
+    "Large Cell Carcinoma": {
+      "precision": 0.8333,
+      "recall": 0.9804,
+      "f1-score": 0.9009,
+      "support": 51.0
+    },
+    "Normal": {
+      "precision": 0.9636,
+      "recall": 0.9815,
+      "f1-score": 0.9725,
+      "support": 54.0
+    },
+    "Squamous Cell Carcinoma": {
+      "precision": 0.9059,
+      "recall": 0.8556,
+      "f1-score": 0.88,
+      "support": 90.0
+    }
+  }
+}

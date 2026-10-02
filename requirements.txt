@@ -1,0 +1,8 @@
+tensorflow>=2.16
+scikit-learn
+numpy
+matplotlib
+seaborn
+opencv-python
+PySide6
+jupyter

@@ -8,8 +8,8 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import matplotlib.pyplot as plt
 import numpy as np
-# from sklearn.metrics import precision_score, recall_score, mean_squared_error, mean_absolute_error, confusion_matrix
-from sklearn.metrics import precision_score, recall_score, mean_squared_error, mean_absolute_error, confusion_matrix
+# from sklearn.metrics import classification_report, confusion_matrix, f1_score, recall_score
+from sklearn.metrics import classification_report, confusion_matrix, f1_score, recall_score
 import seaborn as sns
 import itertools
 
@@ -18,9 +18,9 @@ import itertools
 
 
 # Define directories
-# train_dir = 'Documents/LAWAL KHADIJAH/train'
-# valid_dir = 'Documents/LAWAL KHADIJAH/valid'
-# test_dir = 'Documents/LAWAL KHADIJAH/test'
+# train_dir = './train'
+# valid_dir = './valid'
+# test_dir = './test'
 train_dir = './train'
 valid_dir = './valid'
 test_dir = './test'
@@ -40,8 +40,11 @@ test_datagen = ImageDataGenerator(rescale=1./255)
 
 # Load datasets
 train_generator = train_datagen.flow_from_directory(train_dir, target_size=(224, 224), batch_size=32, class_mode='categorical')
-valid_generator = valid_datagen.flow_from_directory(valid_dir, target_size=(224, 224), batch_size=32, class_mode='categorical')
-test_generator = test_datagen.flow_from_directory(test_dir, target_size=(224, 224), batch_size=32, class_mode='categorical')
+# shuffle=False keeps model.predict() output in the same order as generator.classes, so metrics line up
+valid_generator = valid_datagen.flow_from_directory(valid_dir, target_size=(224, 224), batch_size=32, class_mode='categorical', shuffle=False)
+test_generator = test_datagen.flow_from_directory(test_dir, target_size=(224, 224), batch_size=32, class_mode='categorical', shuffle=False)
+train_eval_generator = train_datagen.flow_from_directory(train_dir, target_size=(224, 224), batch_size=32, class_mode='categorical', shuffle=False)
+class_labels = [k.split('_')[0] for k in train_generator.class_indices]
 
 
 # In[11]:
@@ -127,20 +130,12 @@ train_loss, train_acc = model.evaluate(train_generator)
 print(f'Training loss: {train_loss}')
 print(f'Training accuracy: {train_acc}')
 
-y_true = train_generator.classes
-y_pred = np.argmax(model.predict(train_generator), axis=-1)
+y_true = train_eval_generator.classes
+y_pred = np.argmax(model.predict(train_eval_generator), axis=-1)
 
-precision = precision_score(y_true, y_pred, average='weighted')
-recall = recall_score(y_true, y_pred, average='weighted')
-mse = mean_squared_error(y_true, y_pred)
-mae = mean_absolute_error(y_true, y_pred)
-rmse = np.sqrt(mse)
-
-print(f'Precision: {precision}')
-print(f'Recall: {recall}')
-print(f'MSE: {mse}')
-print(f'MAE: {mae}')
-print(f'RMSE: {rmse}')
+# MSE/MAE/RMSE are regression metrics and meaningless for class labels; use a classification report instead
+print(classification_report(y_true, y_pred, target_names=class_labels, digits=3))
+print(f'Macro F1: {f1_score(y_true, y_pred, average="macro"):.3f}')
 
 
 # In[16]:
@@ -153,17 +148,9 @@ print(f'Validation accuracy: {val_acc}')
 y_true = valid_generator.classes
 y_pred = np.argmax(model.predict(valid_generator), axis=-1)
 
-precision = precision_score(y_true, y_pred, average='weighted')
-recall = recall_score(y_true, y_pred, average='weighted')
-mse = mean_squared_error(y_true, y_pred)
-mae = mean_absolute_error(y_true, y_pred)
-rmse = np.sqrt(mse)
-
-print(f'Precision: {precision}')
-print(f'Recall: {recall}')
-print(f'MSE: {mse}')
-print(f'MAE: {mae}')
-print(f'RMSE: {rmse}')
+# MSE/MAE/RMSE are regression metrics and meaningless for class labels; use a classification report instead
+print(classification_report(y_true, y_pred, target_names=class_labels, digits=3))
+print(f'Macro F1: {f1_score(y_true, y_pred, average="macro"):.3f}')
 
 
 # In[17]:
@@ -176,24 +163,16 @@ print(f'Test accuracy: {test_acc}')
 y_true = test_generator.classes
 y_pred = np.argmax(model.predict(test_generator), axis=-1)
 
-precision = precision_score(y_true, y_pred, average='weighted')
-recall = recall_score(y_true, y_pred, average='weighted')
-mse = mean_squared_error(y_true, y_pred)
-mae = mean_absolute_error(y_true, y_pred)
-rmse = np.sqrt(mse)
-
-print(f'Precision: {precision}')
-print(f'Recall: {recall}')
-print(f'MSE: {mse}')
-print(f'MAE: {mae}')
-print(f'RMSE: {rmse}')
+# MSE/MAE/RMSE are regression metrics and meaningless for class labels; use a classification report instead
+print(classification_report(y_true, y_pred, target_names=class_labels, digits=3))
+print(f'Macro F1: {f1_score(y_true, y_pred, average="macro"):.3f}')
 
 
 # In[18]:
 
 
 cm = confusion_matrix(y_true, y_pred)
-cm_plot_labels = list(valid_generator.class_indices.keys())
+cm_plot_labels = class_labels
 
 def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
     plt.figure(figsize=(20, 8))
@@ -283,8 +262,8 @@ print(f"Average Sensitivity: {average_sensitivity}")
 # In[22]:
 
 
-y_true = train_generator.classes
-y_pred = np.argmax(model.predict(train_generator), axis=-1)
+y_true = train_eval_generator.classes
+y_pred = np.argmax(model.predict(train_eval_generator), axis=-1)
 
 # Calculate sensitivity for each class
 sensitivities = recall_score(y_true, y_pred, average=None)

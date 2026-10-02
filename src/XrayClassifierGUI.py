@@ -132,7 +132,7 @@ class XrayClassifierGUI(QWidget):
             processed_img, preprocessed_path = preprocess_image(image_path)
 
             # Classify the image
-            predicted_class = classify_image(self.model, processed_img)
+            predicted_class, confidence = classify_image(self.model, processed_img)
 
             # Display the original image
             display_image(image_path, self.original_lbl)
@@ -145,4 +145,4 @@ class XrayClassifierGUI(QWidget):
 
             # Display the classification result
             class_name = get_class_name(predicted_class)
-            self.classification_lbl.setText(f'Classification: {class_name}')
+            self.classification_lbl.setText(f'Classification: {class_name} ({confidence:.1%})')

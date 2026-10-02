@@ -1,2 +1,32 @@
-Lib
-models
+# Virtual environments
+.venv/
+venv/
+env/
+Lib/
+Scripts/
+Include/
+pyvenv.cfg
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# IDEs
+.idea/
+.vscode/
+
+# Trained models (large, regenerate with `python train.py`)
+models/
+*.h5
+*.keras
+
+# App runtime output
+preprocessed_image.jpg
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Training logs
+train.log

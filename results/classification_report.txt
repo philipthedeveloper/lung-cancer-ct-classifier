@@ -1,0 +1,10 @@
+                         precision    recall  f1-score   support
+
+         Adenocarcinoma      0.896     0.858     0.877       120
+   Large Cell Carcinoma      0.833     0.980     0.901        51
+                 Normal      0.964     0.981     0.972        54
+Squamous Cell Carcinoma      0.906     0.856     0.880        90
+
+               accuracy                          0.898       315
+              macro avg      0.900     0.919     0.907       315
+           weighted avg      0.900     0.898     0.898       315
